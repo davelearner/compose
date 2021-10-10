@@ -1,0 +1,39 @@
+version: '3.8'
+services:
+  app:
+    build: ./app
+    restart: always
+    environment:
+      MONGO_URL: mongodb://admin:123456@mongo:27017/admin
+    ports:
+      - "8081:8080"
+    volumes:
+    - type: bind
+      source: ./WebData
+      target: /var/www/html
+    depends_on:
+      - mongo
+    networks:
+      - front-end
+      - back-end
+  mongo:
+    image: harbor.tallerdevops.com/grupo5-compose/mongo
+    restart: always
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: 123456
+    volumes: 
+    - database-data:/data/db
+    networks:
+      - back-end
+volumes:
+  database-data:
+networks:
+  front-end:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+      - subnet: 180.10.0.0/16
+  back-end:
+    driver: bridge
